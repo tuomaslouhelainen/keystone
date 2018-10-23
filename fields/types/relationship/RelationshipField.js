@@ -209,6 +209,7 @@ module.exports = Field.create({
 					simpleValue
 					value={this.state.value}
 					valueKey="id"
+					cache={false}
 				/>
 			</div>
 		);
