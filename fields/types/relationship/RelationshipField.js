@@ -206,6 +206,7 @@ module.exports = Field.create({
 					labelKey="name"
 					name={inputName}
 					onChange={this.valueChanged}
+					onMenuOpen={this.valueChanged}
 					simpleValue
 					value={this.state.value}
 					valueKey="id"
