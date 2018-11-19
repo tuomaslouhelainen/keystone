@@ -22,13 +22,19 @@ function compareValues (current, next) {
 	return true;
 }
 
+const generateKey = (pre) => {
+	return `${ pre }_${ new Date().getTime() }`;
+}
+
+
+
 module.exports = Field.create({
 
 	displayName: 'RelationshipField',
 	statics: {
 		type: 'Relationship',
 	},
-
+	
 	getInitialState () {
 		return {
 			value: null,
@@ -39,6 +45,9 @@ module.exports = Field.create({
 	componentDidMount () {
 		this._itemsCache = {};
 		this.loadValue(this.props.value);
+		this.interval = setInterval(() => {
+			this.generateKeyIfNeeded();
+		}, 1000);
 	},
 
 	componentWillReceiveProps (nextProps) {
@@ -159,11 +168,13 @@ module.exports = Field.create({
 	},
 
 	onFieldOpen() {
+		this.generateKeyIfNeeded();
 		// NOTE: this seems like the wrong way to add options to the Select
 		this.loadOptionsCallback(null, {
 			complete: true,
 			options: Object.keys(this._itemsCache).map((k) => this._itemsCache[k]),
 		});
+		this.closeCreate();
 	},
 
 	openCreate () {
@@ -179,6 +190,9 @@ module.exports = Field.create({
 	},
 
 	onCreate (item) {
+		this.props.key = generateKey('key');
+		this.props.currentCategory = this.props.values['question_filter_category'];
+		this.props.currentDifficulty = this.props.values['question_filter_difficulty'];
 		this.cacheItem(item);
 		if (Array.isArray(this.state.value)) {
 			// For many relationships, append the new item to the end
@@ -197,6 +211,19 @@ module.exports = Field.create({
 		this.closeCreate();
 	},
 
+	generateKeyIfNeeded() {
+		if(this.props.currentCategory != this.props.values['question_filter_category'] || this.props.currentDifficulty != this.props.values['question_filter_difficulty']) {
+			this.props.key = generateKey('key');
+			this.props.currentCategory = this.props.values['question_filter_category'];
+			this.props.currentDifficulty = this.props.values['question_filter_difficulty'];
+			this.loadOptionsCallback(null, {
+				complete: true,
+				options: Object.keys(this._itemsCache).map((k) => this._itemsCache[k]),
+			});
+			this.closeCreate();
+		}
+	},
+
 	renderSelect (noedit) {
 		const inputName = this.getInputName(this.props.path);
 		const emptyValueInput = (this.props.many && (!this.state.value || !this.state.value.length))
@@ -208,13 +235,14 @@ module.exports = Field.create({
 				{/* This input element fools Safari's autocorrect in certain situations that completely break react-select */}
 				<input type="text" style={{ position: 'absolute', width: 1, height: 1, zIndex: -1, opacity: 0 }} tabIndex="-1"/>
 				<Select.Async
+					key={this.props.key}
 					multi={this.props.many}
 					disabled={noedit}
 					loadOptions={this.loadOptions}
 					labelKey="name"
 					name={inputName}
 					onChange={this.valueChanged}
-					onMenuOpen={this.onFieldOpen}
+					onFocus={this.onFieldOpen}
 					simpleValue
 					value={this.state.value}
 					valueKey="id"
