@@ -158,6 +158,14 @@ module.exports = Field.create({
 		});
 	},
 
+	onFieldOpen() {
+		// NOTE: this seems like the wrong way to add options to the Select
+		this.loadOptionsCallback(null, {
+			complete: true,
+			options: Object.keys(this._itemsCache).map((k) => this._itemsCache[k]),
+		});
+	},
+
 	openCreate () {
 		this.setState({
 			createIsOpen: true,
@@ -206,7 +214,7 @@ module.exports = Field.create({
 					labelKey="name"
 					name={inputName}
 					onChange={this.valueChanged}
-					onMenuOpen={this.valueChanged}
+					onMenuOpen={this.onFieldOpen}
 					simpleValue
 					value={this.state.value}
 					valueKey="id"
