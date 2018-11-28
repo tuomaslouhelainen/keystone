@@ -27,11 +27,12 @@ const CreateForm = React.createClass({
 		};
 	},
 	getInitialState () {
-		// Set the field values to their default values when first rendering the
-		// form. (If they have a default value, that is)
+		return this.getDecoratedStateByProps(this.props)
+	},
+	getDecoratedStateByProps: function (props) {
 		var values = {};
-		Object.keys(this.props.list.fields).forEach(key => {
-			var field = this.props.list.fields[key];
+		Object.keys(props.list.fields).forEach(key => {
+			var field = props.list.fields[key];
 			var FieldComponent = Fields[field.type];
 			values[field.path] = FieldComponent.getDefaultValue(field);
 		});
@@ -50,6 +51,11 @@ const CreateForm = React.createClass({
 		if (vkey[evt.keyCode] === '<escape>') {
 			this.props.onCancel();
 		}
+	},
+	componentWillReceiveProps (nextProps) {
+		this.setState(
+			this.getDecoratedStateByProps(nextProps)
+		);
 	},
 	// Handle input change events
 	handleChange (event) {
