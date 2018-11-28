@@ -38,7 +38,7 @@ const CreateForm = React.createClass({
 		});
 		return {
 			values: values,
-			alerts: {},
+			alerts: props.err,
 		};
 	},
 	componentDidMount () {
