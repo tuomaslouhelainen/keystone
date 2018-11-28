@@ -48,21 +48,6 @@ export const EditFormHeader = React.createClass({
 			</ToolbarSection>
 		);
 	},
-	renderDuplicateCreateButton () {
-		if (this.props.list.nocreate) return null;
- 		var props = {};
-		if (this.props.list.autocreate) {
-			props.href = '?new' + Keystone.csrf.query;
-		} else {
-			props.onClick = () => { this.toggleDuplicateCreate(true); };
-		}
-		return (
-			<Button type="success" {...props}>
-				<span className="octicon octicon-plus" />
-				<ResponsiveText hiddenXS={`Duplicate ${this.props.list.singular}`} visibleXS="Create" />
-			</Button>
-		);
-	},
 	renderDrilldownItems () {
 		const { data, list } = this.props;
 		const items = data.drilldown ? data.drilldown.items : [];
@@ -163,6 +148,24 @@ export const EditFormHeader = React.createClass({
 		return (
 			<GlyphButton data-e2e-item-create-button="true" color="success" glyph="plus" position="left" {...props}>
 				<ResponsiveText hiddenXS={`New ${singular}`} visibleXS="Create" />
+			</GlyphButton>
+		);
+	},
+	renderDuplicateCreateButton () {
+		const { nocreate, autocreate, singular } = this.props.list;
+		if (this.props.list.nocreate) return null;
+ 	
+		if (nocreate) return null;
+
+		let props = {};
+		if (autocreate) {
+			props.href = '?new' + Keystone.csrf.query;
+		} else {
+			props.onClick = () => { this.toggleDuplicateCreate(true); };
+		}
+		return (
+			<GlyphButton data-e2e-item-create-button="true" color="success" glyph="plus" position="left" {...props}>
+				<ResponsiveText hiddenXS={`Duplicate ${singular}`} visibleXS="Duplicate" />
 			</GlyphButton>
 		);
 	},
