@@ -71,6 +71,13 @@ var ItemView = React.createClass({
 	toggleCreateModal (visible) {
 		this.setState({
 			createIsOpen: visible,
+			duplicateItemData: undefined,
+		});
+	},
+	toggleDuplicateCreate (visible) {
+		this.setState({
+			createIsOpen: visible,
+			duplicateItemData: this.state.itemData
 		});
 	},
 	// Render this items relationships
@@ -162,10 +169,12 @@ var ItemView = React.createClass({
 								list={this.props.currentList}
 								data={this.props.data}
 								toggleCreate={this.toggleCreateModal}
+								toggleDuplicateCreate={this.toggleDuplicateCreate}
 							/>
 							<CreateForm
 								list={this.props.currentList}
 								isOpen={this.state.createIsOpen}
+								values={this.state.duplicateItemData ? this.state.duplicateItemData.fields : {}}
 								onCancel={() => this.toggleCreateModal(false)}
 								onCreate={(item) => this.onCreate(item)}
 							/>
